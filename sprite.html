@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPRITE</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+</head>
+<body>
+    <script>
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(1300, 600);
+        document.body.appendChild(renderer.domElement);
+
+        const rightTexture = new THREE.TextureLoader().load('right.png');
+        const leftTexture = new THREE.TextureLoader().load('left.png');
+
+        const spriteMaterial = new THREE.SpriteMaterial({ map: rightTexture });
+        const sprite = new THREE.Sprite(spriteMaterial);
+        sprite.position.set(0, 0, 0);
+        sprite.velocity = new THREE.Vector3(0, 0, 0);
+        sprite.scale.set(1.5, 1.5, 1.5);
+        scene.add(sprite);
+
+        const backgroundTexture = new THREE.TextureLoader().load('background.jpg');
+        scene.background = backgroundTexture;
+
+        document.addEventListener('keydown', (event) => {
+            const keyCode = event.code;
+            switch (keyCode) {
+                case 'ArrowLeft':
+                    sprite.velocity.x = -0.05;
+                    sprite.material.map = leftTexture;
+                    break;
+                case 'ArrowRight':
+                    sprite.velocity.x = 0.05;
+                    sprite.material.map = rightTexture;
+                    break;
+                case 'Space':
+                    if (sprite.position.y === 0) {
+                        sprite.velocity.y = 0.15;
+                    }
+                    break;
+            }
+        });
+
+        document.addEventListener('keyup', (event) => {
+            const keyCode = event.code;
+            switch (keyCode) {
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    sprite.velocity.x = 0;
+                    break;
+            }
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            sprite.position.add(sprite.velocity); 
+
+            if (sprite.position.y > 0) {
+                sprite.velocity.y -= 0.01;
+            } else if (sprite.position.y < 0) {
+                sprite.velocity.y = 0;
+                sprite.position.y = 0;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

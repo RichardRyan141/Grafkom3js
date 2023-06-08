@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particle</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+</head>
+<body>
+    <script>
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 8;
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(1300, 600);
+        document.body.appendChild(renderer.domElement);
+
+        const blockGeometry = new THREE.BoxGeometry(1, 1, 1);
+        const blockMaterials = [
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000 }),
+            new THREE.MeshBasicMaterial({ color: 0xff0000 })
+        ];
+        const blockMaterial = new THREE.MeshFaceMaterial(blockMaterials);
+        const block = new THREE.Mesh(blockGeometry, blockMaterial);
+        scene.add(block);
+
+        const edges = new THREE.EdgesGeometry(blockGeometry);
+        const edgesMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
+        const edgesMesh = new THREE.LineSegments(edges, edgesMaterial);
+        block.add(edgesMesh);
+
+        const stack = [];
+
+        block.position.y = -0.5;
+
+        const top_stack = -3;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (block.position.y > -3 + stack.length) {
+                block.position.y -= 0.025;
+            } else {
+                const newBlock = block.clone();
+
+                block.position.y = stack.length * 1;
+
+                stack.push(newBlock);
+                scene.add(newBlock);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
